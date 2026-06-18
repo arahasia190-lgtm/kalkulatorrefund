@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Refund Premium</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            transition: background 0.5s ease, color 0.3s ease; 
+        }
+        
+        /* Variasi Tema Latar */
+        
+        body.theme-rose { 
+            background: linear-gradient(135deg, #fbcfe8 0%, #f472b6 100%); 
+            background-color: #fce7f3; 
+        }
+        body.theme-dark { 
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); 
+            color: #f8fafc; 
+        }
+        body.theme-ocean { 
+            background: linear-gradient(135deg, #bae6fd 0%, #38bdf8 100%); 
+        }
+
+        /* Glassmorphism Premium Container */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+        }
+        body.theme-dark .glass-card {
+            background: rgba(30, 41, 59, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Gaya Form Input Modern */
+        .input-premium {
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .input-premium:focus { 
+            border-color: #db2777; 
+            box-shadow: 0 0 0 4px rgba(219, 39, 119, 0.15); 
+            outline: none; 
+            background: #ffffff;
+        }
+        body.theme-dark .input-premium { 
+            background: rgba(15, 23, 42, 0.6); 
+            border-color: #334155; 
+            color: white; 
+        }
+        body.theme-dark .input-premium:focus { 
+            border-color: #38bdf8; 
+            box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15); 
+        }
+
+        /* Navigasi Aktif */
+        .tab-active { 
+            background-color: #db2777; 
+            color: white; 
+            box-shadow: 0 4px 14px rgba(219, 39, 119, 0.35); 
+        }
+        body.theme-dark .tab-active { 
+            background-color: #38bdf8; 
+            color: #0f172a;
+            box-shadow: 0 4px 14px rgba(56, 189, 248, 0.35); 
+        }
+        body.theme-ocean .tab-active {
+            background-color: #0284c7;
+            color: white;
+            box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+        }
+
+        /* Kustomisasi Slider Range */
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-thumb { 
+            -webkit-appearance: none; height: 22px; width: 22px; border-radius: 50%; 
+            background: #ffffff; border: 4px solid #db2777; cursor: pointer; margin-top: -8px; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15); transition: transform 0.1s;
+        }
+        input[type=range]::-webkit-slider-thumb:active { transform: scale(1.2); }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; cursor: pointer; background: #cbd5e1; border-radius: 99px; }
+        body.theme-dark input[type=range]::-webkit-slider-thumb { border-color: #38bdf8; }
+        
+        .animate-fade { animation: fadeEffect 0.4s ease-out forwards; }
+        @keyframes fadeEffect { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Menyembunyikan scrollbar bawaan pada navigasi tab mobile */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="theme-dark min-h-screen flex justify-center items-center p-4 md:p-8 transition-all duration-500">
+
+    <div class="glass-card w-full max-w-5xl rounded-[2.5rem] p-6 md:p-10 relative border">
+        
+        <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center mb-8 border-b border-gray-200/60 dark:border-gray-700/60 pb-5 gap-4">
+            <div class="text-sm font-medium opacity-80 flex items-center gap-2">
+                <i class="fa-solid fa-lightbulb text-yellow-500 text-base animate-bounce"></i>
+                <span>Tips: kamu bisa buka <span class="bg-white/60 dark:bg-slate-800 px-2 py-0.5 rounded font-mono text-xs border border-gray-200 dark:border-gray-600">Pengaturan Latar</span> untuk ubah tema.</span>
+            </div>
+            <div class="relative self-end sm:self-auto">
+                <button onclick="toggleThemeMenu()" class="w-full sm:w-auto bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-5 py-2.5 rounded-2xl shadow-sm hover:shadow-md transition-all text-sm font-bold border border-gray-200/50 dark:border-gray-700 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-palette text-pink-500 dark:text-blue-400"></i> Pengaturan Latar
+                </button>
+                <div id="themeDropdown" class="hidden absolute right-0 mt-2 w-52 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 p-2 z-50">
+                    <button onclick="setTheme('theme-rose')" class="w-full text-left px-4 py-2.5 text-sm rounded-xl hover:bg-pink-50 dark:hover:bg-gray-700 font-semibold mb-1 flex items-center gap-2">🌸 Rose Gold (Default)</button>
+                    <button onclick="setTheme('theme-dark')" class="w-full text-left px-4 py-2.5 text-sm rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold mb-1 flex items-center gap-2">🌙 Midnight Dark</button>
+                    <button onclick="setTheme('theme-ocean')" class="w-full text-left px-4 py-2.5 text-sm rounded-xl hover:bg-blue-50 dark:hover:bg-gray-700 font-semibold flex items-center gap-2">🌊 Ocean Glass</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex gap-1.5 mb-8 pb-2 overflow-x-auto no-scrollbar border-b border-gray-100 dark:border-gray-800">
+            <button onclick="switchTab('calc')" id="btn-calc" class="tab-btn tab-active px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 shrink-0">Kalkulator Refund</button>
+            <button onclick="switchTab('hari')" id="btn-hari" class="tab-btn px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 shrink-0 opacity-60 hover:opacity-100 text-gray-900 dark:text-gray-100">Hitung Hari</button>
+            <button onclick="switchTab('tanggal')" id="btn-tanggal" class="tab-btn px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 shrink-0 opacity-60 hover:opacity-100 text-gray-900 dark:text-gray-100">Penanggalan</button>
+            <button onclick="switchTab('cal')" id="btn-cal" class="tab-btn px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 shrink-0 opacity-60 hover:opacity-100 text-gray-900 dark:text-gray-100">Kalender</button>
+        </div>
+
+        <div id="tab-calc" class="animate-fade grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <div class="lg:col-span-7 space-y-4">
+                <h2 class="text-xl font-black tracking-wide mb-4 uppercase opacity-90">KALKULATOR REFUND APLIKASI</h2>
+                
+                <div>
+                    <label class="block text-xs font-bold mb-1.5 uppercase tracking-wider opacity-70">Harga Beli (Rp)</label>
+                    <input type="number" id="harga" class="input-premium w-full rounded-xl p-3.5 text-sm" placeholder="Masukkan harga dalam rupiah">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold mb-1.5 uppercase tracking-wider opacity-70">Sisa Masa Aktif (Hari)</label>
+                        <input type="number" id="sisaHari" class="input-premium w-full rounded-xl p-3.5 text-sm" placeholder="Masukkan jumlah hari">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold mb-1.5 uppercase tracking-wider opacity-70">Durasi Total (Hari)</label>
+                        <input type="number" id="totalHari" class="input-premium w-full rounded-xl p-3.5 text-sm" placeholder="Masukkan total hari">
+                    </div>
+                </div>
+                <p class="text-[11px] opacity-60 font-medium italic -mt-2">Patokan: 1 bulan=25, 2 bulan=50, 3 bulan=75</p>
+
+                <div>
+                    <label class="block text-xs font-bold mb-1.5 uppercase tracking-wider opacity-70">Service Fee</label>
+                    <select id="feeSelect" onchange="toggleFeeMode()" class="input-premium w-full rounded-xl p-3.5 text-sm cursor-pointer appearance-none bg-no-repeat bg-right">
+                        <option value="0.8">0.8 — pemakaian kurang dari 1 minggu</option>
+                        <option value="0.7">0.7 — belum pernah claim garansi</option>
+                        <option value="0.6">0.6 — sudah pernah claim garansi 1-2×</option>
+                        <option value="0.5">0.5 — sudah pernah claim garansi 3×</option>
+                        <option value="0.4">0.4 — sudah pernah claim garansi > 3×</option>
+                        <option value="custom" selected>Custom (pakai slider)</option>
+                    </select>
+                </div>
+
+                <div id="sliderContainer" class="bg-white/60 dark:bg-gray-800/60 p-4 rounded-xl border border-gray-200/50 dark:border-gray-700 space-y-2.5 shadow-inner">
+                    <div class="flex justify-between font-bold text-xs uppercase tracking-wider opacity-80">
+                        <span>Rate Refund</span>
+                        <span id="sliderValue" class="text-pink-600 dark:text-blue-400 text-sm font-black">0.4</span>
+                    </div>
+                    <input type="range" id="feeSlider" min="0.1" max="1.0" step="0.1" value="0.4" oninput="updateSliderVal()">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold mb-1.5 uppercase tracking-wider opacity-70">Diskon Tambahan (%)</label>
+                    <input type="number" id="diskon" class="input-premium w-full rounded-xl p-3.5 text-sm" placeholder="0" value="0">
+                </div>
+
+                <button onclick="hitungRefund()" class="w-full bg-pink-500 hover:bg-pink-600 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-bold py-4 rounded-xl transition-all duration-200 shadow-md transform active:scale-[0.99] text-base mt-2">
+                    Hitung
+                </button>
+            </div>
+
+            <div class="lg:col-span-5 flex flex-col justify-center items-center p-6 md:p-8 bg-white/40 dark:bg-gray-800/40 rounded-3xl border border-gray-200/40 dark:border-gray-700/40 shadow-sm min-h-[380px]">
+                <h3 class="text-sm font-black mb-8 tracking-widest opacity-80 text-center uppercase">HASIL REFUND</h3>
+                
+                <div class="relative w-48 h-48 rounded-full border-[10px] border-white dark:border-gray-700 shadow-lg flex items-center justify-center bg-white/70 dark:bg-gray-800/70">
+                    <div class="text-center p-2">
+                        <p id="hasilAngka" class="text-2xl font-black text-pink-600 dark:text-blue-400 tracking-tight">0%</p>
+                    </div>
+                </div>
+
+                <div class="mt-8 text-center w-full space-y-3">
+                    <div class="text-[11px] font-bold opacity-60 uppercase tracking-wider">Rumus Perhitungan:</div>
+                    <div class="bg-white/80 dark:bg-gray-900/80 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 text-xs font-semibold text-gray-700 dark:text-gray-300">
+                        Rumus: harga beli × sisa durasi ÷ total durasi × fee
+                    </div>
+                    <p id="contohHitungan" class="text-xs font-medium text-pink-600 dark:text-blue-300 italic">Periksa input: Harga beli harus > 0 • Total durasi harus > 0</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-hari" class="hidden animate-fade grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="space-y-4">
+                <h2 class="text-xl font-black tracking-wide mb-4 uppercase opacity-90">HITUNG SELISIH HARI</h2>
+                <div>
+                    <label class="block text-xs font-bold mb-1.5 uppercase opacity-70">Tanggal Mulai</label>
+                    <input type="date" id="hariMulai" class="input-premium w-full rounded-xl p-3.5 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold mb-1.5 uppercase opacity-70">Tanggal Akhir</label>
+                    <input type="date" id="hariAkhir" class="input-premium w-full rounded-xl p-3.5 text-sm">
+                </div>
+                <button onclick="hitungSelisih()" class="w-full bg-pink-500 hover:bg-pink-600 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-bold py-3.5 rounded-xl shadow-md mt-2">Hitung</button>
+            </div>
+            <div class="flex flex-col justify-center items-center bg-white/40 dark:bg-gray-800/40 rounded-3xl border border-gray-200/40 p-6">
+                <h3 class="text-sm font-black opacity-70 mb-2 tracking-widest">HASIL</h3>
+                <p id="hasilHitungHari" class="text-5xl font-black text-pink-600 dark:text-blue-400">1 hari</p>
+                <p class="text-xs opacity-60 mt-3 text-center">Tanggal akhir setelah tanggal mulai.</p>
+            </div>
+        </div>
+
+        <div id="tab-tanggal" class="hidden animate-fade grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="space-y-4">
+                <h2 class="text-xl font-black tracking-wide mb-4 uppercase opacity-90">PENANGGALAN</h2>
+                <div>
+                    <label class="block text-xs font-bold mb-1.5 uppercase opacity-70">Tanggal Awal (Hari Ini)</label>
+                    <input type="date" id="tglAwal" class="input-premium w-full rounded-xl p-3.5 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold mb-1.5 uppercase tracking-wider opacity-70">Sampai Tanggal</label>
+                    <input type="date" id="tglAkhirPenanggalan" class="input-premium w-full rounded-xl p-3.5 text-sm">
+                </div>
+                <button onclick="eksekusiPenanggalan()" class="w-full bg-pink-500 hover:bg-pink-600 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-bold py-3.5 rounded-xl shadow-md mt-2">Hitung</button>
+            </div>
+            <div class="flex flex-col justify-center items-center bg-white/40 dark:bg-gray-800/40 rounded-3xl border border-gray-200/40 p-6">
+                <h3 class="text-sm font-black opacity-70 mb-2 tracking-widest">HASIL</h3>
+                <p id="hasilPenanggalanBox" class="text-xs opacity-60 text-center">Isi tanggal lalu klik Hitung.</p>
+            </div>
+        </div>
+
+        <div id="tab-cal" class="hidden animate-fade">
+            <div class="flex justify-between items-center mb-6">
+                <button onclick="changeMonth(-1)" class="w-9 h-9 rounded-xl bg-white dark:bg-gray-800 shadow-sm flex justify-center items-center border border-gray-200 dark:border-gray-700 hover:bg-gray-50"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+                <h2 class="text-lg font-black uppercase tracking-wider" id="calMonthYear">Bulan Tahun</h2>
+                <button onclick="changeMonth(1)" class="w-9 h-9 rounded-xl bg-white dark:bg-gray-800 shadow-sm flex justify-center items-center border border-gray-200 dark:border-gray-700 hover:bg-gray-50"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+            </div>
+            <div class="bg-white/60 dark:bg-gray-800/60 rounded-3xl border border-gray-200/50 dark:border-gray-700 p-4 md:p-6 shadow-inner">
+                <div class="grid grid-cols-7 gap-1 text-center text-xs font-bold mb-4 opacity-70 uppercase tracking-wider">
+                    <div class="text-red-500">Minggu</div><div>Senin</div><div>Selasa</div><div>Rabu</div><div>Kamis</div><div>Jumat</div><div class="text-red-500">Sabtu</div>
+                </div>
+                <div id="calendarGrid" class="grid grid-cols-7 gap-1.5 text-center text-sm font-semibold">
+                    </div>
+                <p class="text-[11px] opacity-50 mt-4 italic">Klik tanggal untuk memilih.</p>
+            </div>
+        </div>
+
+        <div class="mt-10 text-center text-[11px] font-bold opacity-40 uppercase tracking-widest">
+            © 2025 — Website Dibuat Oleh Lempeurs
+        </div>
+    </div>
+
+    <script>
+        // Set tanggal default untuk kenyamanan pemakaian pengguna
+        const hariIni = new Date().toISOString().split('T')[0];
+        document.getElementById('hariMulai').value = hariIni;
+        document.getElementById('tglAwal').value = hariIni;
+
+        // --- 1. FITUR PENGATURAN LATAR/TEMA (SOLUSI BUG UTAMA) ---
+        function toggleThemeMenu() {
+            document.getElementById('themeDropdown').classList.toggle('hidden');
+        }
+        
+        function setTheme(themeName) {
+            // SOLUSI: Menghapus tema lama tanpa menyentuh class struktur layout tengah layar (flex, items-center, dll)
+            document.body.classList.remove('theme-rose', 'theme-dark', 'theme-ocean');
+            document.body.classList.add(themeName);
+            document.getElementById('themeDropdown').classList.add('hidden');
+        }
+
+        // Menutup menu pilihan dropdown secara otomatis jika klik di luar tombol
+        window.onclick = function(event) {
+            if (!event.target.closest('.relative')) {
+                document.getElementById('themeDropdown').classList.add('hidden');
+            }
+        }
+
+        // --- 2. LOGIKA NAVIGASI TAB ---
+        function switchTab(tabName) {
+            const semuaTab = ['calc', 'hari', 'tanggal', 'cal'];
+            semuaTab.forEach(tab => {
+                document.getElementById('tab-' + tab).classList.add('hidden');
+                let tombol = document.getElementById('btn-' + tab);
+                tombol.classList.remove('tab-active');
+                tombol.classList.add('opacity-60');
+            });
+
+            document.getElementById('tab-' + tabName).classList.remove('hidden');
+            let tombolAktif = document.getElementById('btn-' + tabName);
+            tombolAktif.classList.add('tab-active');
+            tombolAktif.classList.remove('opacity-60');
+
+            if(tabName === 'cal') initCalendar();
+        }
+
+        // --- 3. SISTEM HITUNG KALKULATOR REFUND ---
+        function toggleFeeMode() {
+            const opsiPilihan = document.getElementById('feeSelect').value;
+            const wadahSlider = document.getElementById('sliderContainer');
+            if(opsiPilihan === 'custom') {
+                wadahSlider.classList.remove('hidden');
+            } else {
+                wadahSlider.classList.add('hidden');
+            }
+        }
+
+        function updateSliderVal() {
+            document.getElementById('sliderValue').innerText = document.getElementById('feeSlider').value;
+        }
+
+        function formatMataUang(nominal) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(nominal);
+        }
+
+        function hitungRefund() {
+            const harga = parseFloat(document.getElementById('harga').value);
+            const sisa = parseFloat(document.getElementById('sisaHari').value);
+            const total = parseFloat(document.getElementById('totalHari').value);
+            const diskon = parseFloat(document.getElementById('diskon').value) || 0;
+            
+            let jenisFee = document.getElementById('feeSelect').value;
+            let nilaiFee = jenisFee === 'custom' ? parseFloat(document.getElementById('feeSlider').value) : parseFloat(jenisFee);
+
+            if(!harga || !sisa || !total) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Form Belum Lengkap',
+                    text: 'Silakan isi parameter Harga Beli, Sisa Hari, dan Durasi Total!',
+                    confirmButtonColor: '#db2777'
+                });
+                return;
+            }
+
+            // Rumus: (harga beli x sisa durasi / total durasi) x service fee
+            let nominalAwal = (harga * sisa / total) * nilaiFee;
+            let potonganDiskon = nominalAwal * (diskon / 100);
+            let nominalAkhir = Math.round(nominalAwal - potonganDiskon);
+
+            // Update UI hasil kalkulasi nominal rupiah
+            document.getElementById('hasilAngka').innerText = formatMataUang(nominalAkhir);
+            
+            // Format rincian rill hitungan angka di bawah kotak hasil
+            let rincianTeks = `Contoh: ${harga.toLocaleString('id-ID')} × ${sisa} ÷ ${total} × ${nilaiFee} ≈ ${nominalAkhir.toLocaleString('id-ID')}`;
+            if(diskon > 0) rincianTeks += ` (Dipotong diskon ${diskon}%)`;
+            document.getElementById('contohHitungan').innerText = rincianTeks + " (dibulatkan).";
+        }
+
+        // --- 4. SISTEM HITUNG SELISIH HARI ---
+        function hitungSelisih() {
+            const tglAwal = new Date(document.getElementById('hariMulai').value);
+            const tglAkhir = new Date(document.getElementById('hariAkhir').value);
+            
+            if (isNaN(tglAwal) || isNaN(tglAkhir)) {
+                Swal.fire('Info', 'Isi data tanggal awal & akhir dahulu.', 'info'); 
+                return;
+            }
+            
+            const selisihWaktu = Math.abs(tglAkhir - tglAwal);
+            const totalHari = Math.ceil(selisihWaktu / (1000 * 60 * 60 * 24));
+            document.getElementById('hasilHitungHari').innerText = totalHari + " hari";
+        }
+
+        // --- 5. SISTEM PENANGGALAN TAB 3 ---
+        function eksekusiPenanggalan() {
+            const awal = new Date(document.getElementById('tglAwal').value);
+            const akhir = new Date(document.getElementById('tglAkhirPenanggalan').value);
+            
+            if (isNaN(awal) || isNaN(akhir)) {
+                Swal.fire('Info', 'Isi data kedua tanggal terlebih dahulu.', 'info'); 
+                return;
+            }
+            
+            const selisihWaktu = Math.abs(akhir - awal);
+            const totalHari = Math.ceil(selisihWaktu / (1000 * 60 * 60 * 24));
+            
+            document.getElementById('hasilPenanggalanBox').innerHTML = `
+                <div class="text-center">
+                    <p class="text-4xl font-black text-pink-600 dark:text-blue-400 mb-2">${totalHari} hari</p>
+                    <p class="text-xs font-semibold opacity-70">Selisih dihitung: (Tanggal Akhir - Tanggal Mulai) dalam hari.</p>
+                </div>
+            `;
+        }
+
+        // --- 6. IMPLEMENTASI KALENDER INTERAKTIF ---
+        let penanggalanKalender = new Date();
+        function initCalendar() { generateKalenderAplikasi(); }
+        
+        function changeMonth(arah) {
+            penanggalanKalender.setMonth(penanggalanKalender.getMonth() + arah);
+            generateKalenderAplikasi();
+        }
+
+        function generateKalenderAplikasi() {
+            const tahun = penanggalanKalender.getFullYear();
+            const bulan = penanggalanKalender.getMonth();
+            const hariIniPenanda = new Date();
+            
+            const daftarBulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            document.getElementById('calMonthYear').innerText = `${daftarBulan[bulan]} ${tahun}`;
+
+            const indexHariPertama = new Date(tahun, bulan, 1).getDay();
+            const jumlahHariSebulan = new Date(tahun, bulan + 1, 0).getDate();
+            
+            const areaGrid = document.getElementById('calendarGrid');
+            areaGrid.innerHTML = "";
+
+            // Blok kotak transparan untuk hari kosong awal bulan
+            for(let i = 0; i < indexHariPertama; i++) {
+                areaGrid.innerHTML += `<div></div>`;
+            }
+
+            // Loop untuk merender tanggal angka sebulan penuh
+            for(let i = 1; i <= jumlahHariSebulan; i++) {
+                let statusHariIni = (i === hariIniPenanda.getDate() && bulan === hariIniPenanda.getMonth() && tahun === hariIniPenanda.getFullYear());
+                let penandaKhususKombinasi = (i === 19 && bulan === 5 && tahun === 2026) ? "bg-pink-500 text-white shadow-md transform scale-105" : "";
+                
+                let gayaKotak = statusHariIni 
+                    ? "bg-pink-600 dark:bg-blue-500 text-white shadow-md" 
+                    : "bg-white/40 dark:bg-gray-700/50 hover:bg-pink-100 dark:hover:bg-slate-600 border border-gray-200/40 dark:border-gray-600 text-gray-800 dark:text-gray-100";
+                
+                if(penandaKhususKombinasi) gayaKotak = penandaKhususKombinasi;
+
+                areaGrid.innerHTML += `<div class="p-2.5 rounded-xl ${gayaKotak} transition-all duration-150 flex items-center justify-center cursor-pointer text-xs font-bold shadow-sm">${i}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>
